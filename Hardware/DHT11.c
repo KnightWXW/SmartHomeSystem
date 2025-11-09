@@ -4,20 +4,46 @@
 #define DHT_PIN GPIO_Pin_1
 
 /**
- * @description: 复位DHT11
+ * @description: DHT11输出引脚初始化
+ * @return: {*}
+ */
+void DHT11_IO_OUT(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin = DHT_PIN;            // GPIO引脚:DHT_PIN 引脚
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  // GPIO模式:推挽输出模式
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; // GPIO速度:50MHz
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+}
+
+/**
+ * @description: DHT11输入引脚初始化
+ * @return: {*}
+ */
+void DHT11_IO_IN(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin = DHT_PIN;            // GPIO引脚:DHT_PIN 引脚
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;     // GPIO模式:上拉输入模式
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; // GPIO速度:50MHz
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+}
+
+/**
+ * @description: 复位DHT11,并发送初始信号[输出模式]
  * @return: {*}
  */
 void DHT11_Reset(void)
 {
-    DHT11_IO_OUT();  // SET OUTPUT
-    DHT11_DQ_OUT(0); // 拉低DQ
-    Delay_ms(20);    // 拉低至少18ms
-    DHT11_DQ_OUT(1); // DQ=1
-    Delay_us(30);     // 主机拉高20~40us
+    DHT11_IO_OUT();                                 // 输出引脚初始化
+    GPIO_WriteBit(GPIOA, GPIO_Pin_1, (BitAction)0); // 拉低引脚20ms(至少18ms)
+    Delay_ms(20);
+    GPIO_WriteBit(GPIOA, GPIO_Pin_1, (BitAction)1); // 松开引脚30μs(20-40μs)
+    Delay_us(30);
 }
 
 /**
- * @description: 等待DHT11的回应
+ * @description: 等待DHT11的回应[输入模式]
  * @return: {*}
  *      1: 未检测到DHT11存在
  *      0: 检测到DHT11存在
@@ -25,12 +51,13 @@ void DHT11_Reset(void)
 uint8_t DHT11_Check(void)
 {
     uint8_t retry = 0;
-    DHT11_IO_IN();                     // SET INPUT
-    while (DHT11_DQ_IN && retry < 100) // DHT11会拉低40~80us
+    DHT11_IO_IN(); // 输入引脚初始化
+    // 拉低40~80us
+    while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) && retry < 100)
     {
         retry++;
         Delay_us(1);
-    };
+    }
     if (retry >= 100)
     {
         return 1;
@@ -39,11 +66,12 @@ uint8_t DHT11_Check(void)
     {
         retry = 0;
     }
-    while (!DHT11_DQ_IN && retry < 100) // DHT11拉低后会再次拉高40~80us
+    // 拉低后会再次拉高40~80us
+    while (!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) && retry < 100)
     {
         retry++;
         Delay_us(1);
-    };
+    }
     if (retry >= 100)
     {
         return 1;
@@ -58,19 +86,22 @@ uint8_t DHT11_Check(void)
 uint8_t DHT11_Read_Bit(void)
 {
     uint8_t retry = 0;
-    while (DHT11_DQ_IN && retry < 100) // 等待变为低电平
+    // 等待变为低电平
+    while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) && retry < 100)
     {
         retry++;
         Delay_us(1);
     }
     retry = 0;
-    while (!DHT11_DQ_IN && retry < 100) // 等待变高电平
+    // 等待变为高电平
+    while (!GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) && retry < 100)
     {
         retry++;
         Delay_us(1);
     }
-    Delay_us(40); // 等待40us
-    if (DHT11_DQ_IN)
+    // 读取1位数据
+    Delay_us(40);
+    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1))
     {
         return 1;
     }
@@ -104,14 +135,15 @@ uint8_t DHT11_Read_Byte(void)
 uint8_t DHT11_Read_Data(uint8_t *temp, uint8_t *humi)
 {
     uint8_t buf[5];
-    uint8_t i;
-    DHT11_Reset();
+    DHT11_Reset(); // DHT复位,发出起始信号
     if (DHT11_Check() == 0)
     {
-        for (i = 0; i < 5; i++) // 读取40位数据
+        for (uint8_t i = 0; i < 5; i++) // 读取40位数据
         {
             buf[i] = DHT11_Read_Byte();
         }
+        // 校验和 == [8bit湿度整数数据 + 8bit湿度小数数据
+        //           + 8bi温度整数数据 + 8bit温度小数数据] 所得结果的末尾8位
         if ((buf[0] + buf[1] + buf[2] + buf[3]) == buf[4])
         {
             *humi = buf[0];
@@ -132,14 +164,9 @@ uint8_t DHT11_Read_Data(uint8_t *temp, uint8_t *humi)
  */
 uint8_t DHT11_Init(void)
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); // 使能PG端口时钟
-    GPIO_InitStructure.GPIO_Pin = DHT_PIN;                // PG11端口配置
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;      // 推挽输出
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure); // 初始化IO口
-    GPIO_SetBits(GPIOA, DHT_PIN);          // PG11 输出高
+    // 开启时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); // GPIOA
 
-    DHT11_Reset();          // 复位DHT11
+    DHT11_Reset();        // 复位DHT11,发送起始信号
     return DHT11_Check(); // 等待DHT11的回应
 }
