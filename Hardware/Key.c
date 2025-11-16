@@ -25,22 +25,24 @@ void Key_Init(void)
 
 /**
  * @description: 获取按键的键码值
- * @param {uint8_t} mode 按键连续
+ * @param {uint8_t} KeyMode 按键连续
+ *   0: 不支持连续按键
+ *   1: 支持连续按键
  * @return: {*}
  */
 uint16_t Key_GetNum(uint8_t KeyMode)
 {
-    uint16_t keyNum = 1;
-    // 支持连续按键
+    static uint16_t keyUp = 1; // 按键按下释放标志位 0[释放] 1[按下]
+    // 支持连续按键,连续按下时手动将标志位置1
     if (KeyMode == 1)
     {
-        keyNum = 1;
+        keyUp = 1;
     }
-    // 不支持连续按键
-    if (keyNum == 1 && (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0 || GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0 || GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0))
+   
+    if (keyUp == 1 && (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0 || GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0 || GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0))
     {
         Delay_ms(20); // 延时消抖
-        keyNum = 0;
+        keyUp = 0;
         if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0)
         {
             Delay_ms(20); // 延时消抖
@@ -63,9 +65,10 @@ uint16_t Key_GetNum(uint8_t KeyMode)
             return 3;
         }
     }
+    // 不支持连续按键
     else if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 1 && GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 1 && GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 1)
     {
-        keyNum = 1;
+        keyUp = 1;
     }
     return 0;
 }

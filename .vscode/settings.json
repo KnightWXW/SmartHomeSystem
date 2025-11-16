@@ -1,6 +1,12 @@
 {
     "files.associations": {
+        "serial.h": "c",
+        "key.h": "c",
         "stm32f10x.h": "c",
+        "dht11.h": "c",
+        "buzzer.h": "c",
+        "onenet.h": "c",
+        "string.h": "c",
         "esp8266.h": "c"
     }
 }

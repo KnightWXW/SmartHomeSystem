@@ -132,7 +132,7 @@ uint8_t DHT11_Read_Byte(void)
  * @param {uint8_t} *humi: 湿度值(范围:20%~90%)
  * @return: {*} 0[正常]/1[读取失败]
  */
-uint8_t DHT11_Read_Data(uint8_t *temp, uint8_t *humi)
+uint8_t DHT11_Read_Data(uint8_t *TempInt, uint8_t *TempDec, uint8_t *HumiInt, uint8_t *HumiDec)
 {
     uint8_t buf[5];
     DHT11_Reset(); // DHT复位,发出起始信号
@@ -146,15 +146,17 @@ uint8_t DHT11_Read_Data(uint8_t *temp, uint8_t *humi)
         //           + 8bi温度整数数据 + 8bit温度小数数据] 所得结果的末尾8位
         if ((buf[0] + buf[1] + buf[2] + buf[3]) == buf[4])
         {
-            *humi = buf[0];
-            *temp = buf[2];
+            *HumiInt = buf[0];
+            *HumiDec = buf[1];
+            *TempInt = buf[2];
+            *TempDec = buf[3];
         }
-        return 0;
     }
     else
     {
         return 1;
     }
+    return 0;
 }
 
 /**
@@ -166,6 +168,8 @@ uint8_t DHT11_Init(void)
 {
     // 开启时钟
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); // GPIOA
+    DHT11_IO_OUT();
+    GPIO_SetBits(GPIOA, DHT_PIN); // 引脚初始化输出高电平
 
     DHT11_Reset();        // 复位DHT11,发送起始信号
     return DHT11_Check(); // 等待DHT11的回应

@@ -1,6 +1,5 @@
-
-#ifndef _COMMON_H_
-#define _COMMON_H_
+#ifndef __COMMON_H__
+#define __COMMON_H__
 
 typedef _Bool uint1;
 typedef unsigned char uint8;

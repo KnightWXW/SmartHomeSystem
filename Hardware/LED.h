@@ -6,9 +6,9 @@ typedef struct
     uint8_t LedStatus;
 } LED_INFO;
 
-void LED_Init(uint16_t GPIO_Pin);
-void LED_ON(GPIO_TypeDef *GPIO, uint16_t GPIO_Pin);
-void LED_OFF(GPIO_TypeDef *GPIO, uint16_t GPIO_Pin);
-void LED_Turn(GPIO_TypeDef *GPIO, uint16_t GPIO_Pin);
+void LED_Init(void);
+void LED_ON(void);
+void LED_OFF(void);
+void LED_Turn(void);
 
 #endif

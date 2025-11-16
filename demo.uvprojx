@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Start;.\User;.\Library;.\System;.\Hardware</IncludePath>
+              <IncludePath>.\Start;.\User;.\Library;.\System;.\Hardware;.\Net</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -690,6 +690,56 @@
               <FileType>5</FileType>
               <FilePath>.\Hardware\Key.h</FilePath>
             </File>
+            <File>
+              <FileName>DHT11.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\DHT11.c</FilePath>
+            </File>
+            <File>
+              <FileName>DHT11.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\DHT11.h</FilePath>
+            </File>
+            <File>
+              <FileName>Screen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\Screen.c</FilePath>
+            </File>
+            <File>
+              <FileName>Screen.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\Screen.h</FilePath>
+            </File>
+            <File>
+              <FileName>Buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\Buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>Buzzer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\Buzzer.h</FilePath>
+            </File>
+            <File>
+              <FileName>Usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\Usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>Usart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\Usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>LED.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\LED.c</FilePath>
+            </File>
+            <File>
+              <FileName>LED.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\LED.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -714,6 +764,56 @@
               <FileName>stm32f10x_it.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\User\stm32f10x_it.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Net</GroupName>
+          <Files>
+            <File>
+              <FileName>cJSON.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Net\cJSON.c</FilePath>
+            </File>
+            <File>
+              <FileName>cJSON.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Net\cJSON.h</FilePath>
+            </File>
+            <File>
+              <FileName>Common.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Net\Common.h</FilePath>
+            </File>
+            <File>
+              <FileName>ESP8266.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Net\ESP8266.c</FilePath>
+            </File>
+            <File>
+              <FileName>ESP8266.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Net\ESP8266.h</FilePath>
+            </File>
+            <File>
+              <FileName>MqttKit.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Net\MqttKit.c</FilePath>
+            </File>
+            <File>
+              <FileName>MqttKit.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Net\MqttKit.h</FilePath>
+            </File>
+            <File>
+              <FileName>OneNet.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Net\OneNet.c</FilePath>
+            </File>
+            <File>
+              <FileName>OneNet.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Net\OneNet.h</FilePath>
             </File>
           </Files>
         </Group>
