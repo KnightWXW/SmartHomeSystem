@@ -4,7 +4,7 @@
 #include "stm32f10x.h"
 #include <stdio.h>
 
-#define USART_DEBUG USART1 // 调试打印所使用的串口组
+#define USART_DEBUG USART1 // 调试打印所使用的串口369.,
 
 void Usart1_Init(unsigned int baud);
 void Usart2_Init(unsigned int baud);

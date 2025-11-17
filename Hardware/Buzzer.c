@@ -19,6 +19,8 @@ void Buzzer_Init(void)
     gpioStructure.GPIO_Speed = GPIO_Speed_50MHz; // GPIO速度,50MHz
     gpioStructure.GPIO_Mode = GPIO_Mode_Out_PP;  // GPIO模式,推挽输出模式
     GPIO_Init(GPIOC, &gpioStructure);
+
+    GPIO_WriteBit(GPIOC, GPIO_Pin_13, Bit_SET); // 初始为不鸣叫
 }
 
 /**

@@ -18,13 +18,13 @@ char key[48];
 extern unsigned char esp8266_buf[512];
 
 /*产品ID*/
-#define PROID "yHtNI9iijM"
+#define PROID "Yc4Qwil73t"
 
 // 鉴权Token
-#define TOKEN "version=2018-10-31&res=products%2FyHtNI9iijM%2Fdevices%2FTest1&et=1782126077&method=md5&sign=pj16A1L5hxgFaeONZtSFSA%3D%3D"
+#define TOKEN "version=2018-10-31&res=products%2FYc4Qwil73t%2Fdevices%2Fdev1&et=2082712516&method=md5&sign=iy8PjKSgoSLN%2Bhu65d0lwg%3D%3D"
 
 // 设备名称
-#define DEVID "Test1"
+#define DEVID "dev1"
 
 extern unsigned char esp8266_buf[512];
 extern uint8_t AlarmFlag;

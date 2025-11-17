@@ -13,14 +13,14 @@
 void Key_Init(void)
 {
     // 开启时钟
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
     // 初始化 GPIO
     GPIO_InitTypeDef gpioStructure;
-    gpioStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_4 | GPIO_Pin_6; // GPIO引脚,PIN 引脚
+    gpioStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_1 | GPIO_Pin_0; // GPIO引脚,PIN 引脚
     gpioStructure.GPIO_Speed = GPIO_Speed_50MHz;                   // GPIO速度,50MHz
     gpioStructure.GPIO_Mode = GPIO_Mode_IPU;                       // GPIO模式,上拉输入模式
-    GPIO_Init(GPIOA, &gpioStructure);
+    GPIO_Init(GPIOB, &gpioStructure);
 }
 
 /**
@@ -39,34 +39,34 @@ uint16_t Key_GetNum(uint8_t KeyMode)
         keyUp = 1;
     }
    
-    if (keyUp == 1 && (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0 || GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0 || GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0))
+    if (keyUp == 1 && (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 0 || GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0 || GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) == 0))
     {
         Delay_ms(20); // 延时消抖
         keyUp = 0;
-        if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0)
+        if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 0)
         {
             Delay_ms(20); // 延时消抖
-            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0);   // 等待按键松手
+            while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 0);   // 等待按键松手
             Delay_ms(20); // 延时消抖
             return 1;
         }
-        else if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0)
+        else if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0)
         {
             Delay_ms(20); // 延时消抖
-            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 0);   // 等待按键松手
+            while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0);   // 等待按键松手
             Delay_ms(20); // 延时消抖
             return 2;
         }
-        else if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0)
+        else if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) == 0)
         {
             Delay_ms(20); // 延时消抖
-            while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0);   // 等待按键松手
+            while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) == 0);   // 等待按键松手
             Delay_ms(20); // 延时消抖
             return 3;
         }
     }
     // 不支持连续按键
-    else if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 1 && GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4) == 1 && GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 1)
+    else if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 1 && GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 1 && GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) == 1)
     {
         keyUp = 1;
     }

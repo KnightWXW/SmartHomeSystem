@@ -5,7 +5,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#define ESP8266_WIFI_INFO "AT+CWJAP=\"abc\",\"abc123456\"\r\n"
+#define ESP8266_WIFI_INFO "AT+CWJAP=\"OPPO\",\"147258369\"\r\n"
+#define ESP8266_ONENET_INFO	 "AT+CIPSTART=\"TCP\",\"mqtts.heclouds.com\",1883\r\n"
 
 unsigned char esp8266Buf[512];	  // ESP8266缓存数组
 unsigned short esp8266Cnt = 0;	  // ESP8266当前计数
@@ -114,7 +115,8 @@ unsigned char *ESP8266_GetIPD(unsigned short timeOut)
 					ptrIPD++;
 					return (unsigned char *)(ptrIPD);
 				}
-				else{
+				else
+				{
 					return NULL;
 				}
 			}
@@ -132,22 +134,34 @@ void ESP8266_Init(void)
 {
 	ESP8266_Clear();
 	UsartPrintf(USART_DEBUG, "1. AT\r\n");
-	while (ESP8266_SendCmd("AT\r\n", "OK")){
-		Delay_ms(500);
-	}
+	while (ESP8266_SendCmd("AT\r\n", "OK"))
+	{
+	};
+	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "2. CWMODE\r\n");
-	while (ESP8266_SendCmd("AT+CWMODE=1\r\n", "OK")){
-		Delay_ms(500);
-	}
+	while (ESP8266_SendCmd("AT+CWMODE=1\r\n", "OK"))
+	{
+	};
+	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "3. AT+CWDHCP\r\n");
-	while (ESP8266_SendCmd("AT+CWDHCP=1,1\r\n", "OK")){
-		Delay_ms(500);
-	}	
+	while (ESP8266_SendCmd("AT+CWDHCP=1,1\r\n", "OK"))
+	{
+		
+	};
+	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "4. CWJAP\r\n");
-	while (ESP8266_SendCmd(ESP8266_WIFI_INFO, "GOT IP")){
-		Delay_ms(500);
-	}	
-	UsartPrintf(USART_DEBUG, "5. ESP8266 Init OK\r\n");
+	while (ESP8266_SendCmd(ESP8266_WIFI_INFO, "GOT IP"))
+	{
+		
+	};
+	Delay_ms(500);
+	UsartPrintf(USART_DEBUG, "5. CIPSTART\r\n");
+	while (ESP8266_SendCmd(ESP8266_ONENET_INFO, "CONNECT"))
+	{
+		
+	};
+	Delay_ms(500);
+	UsartPrintf(USART_DEBUG, "6. ESP8266 Init OK\r\n");
 }
 
 /**

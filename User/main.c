@@ -27,13 +27,17 @@ uint8_t AlarmFlag = 0;
 
 int main(void)
 {
-	OLED_Init();			  // OLED初始化
-	LED_Init();				  // LED初始化
-	Key_Init();				  // Key初始化
-	Buzzer_Init(); // 蜂鸣器初始化
-	DHT11_Init();			  // DHT11初始化
-	ESP8266_Init();			  // ESP8266初始化
-
+	OLED_Init();	// OLED初始化
+	LED_Init();		// LED初始化
+	Key_Init();		// Key初始化
+	Buzzer_Init();	// 蜂鸣器初始化
+	DHT11_Init();	// DHT11初始化
+	
+	OLED_ShowString(1, 1, "Connecting");
+	
+	ESP8266_Init(); // ESP8266初始化
+	OLED_Clear();
+	OLED_ShowString(1, 1, "11");
 	// 连接OneNet平台,若失败等待500ms继续尝试
 	while (OneNet_DevLink())
 	{
