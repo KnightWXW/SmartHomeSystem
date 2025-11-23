@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #define ESP8266_WIFI_INFO "AT+CWJAP=\"OPPO\",\"147258369\"\r\n"
-#define ESP8266_ONENET_INFO	 "AT+CIPSTART=\"TCP\",\"mqtts.heclouds.com\",1883\r\n"
+#define ESP8266_ONENET_INFO "AT+CIPSTART=\"TCP\",\"mqtts.heclouds.com\",1883\r\n"
 
 unsigned char esp8266Buf[512];	  // ESP8266缓存数组
 unsigned short esp8266Cnt = 0;	  // ESP8266当前计数
@@ -93,7 +93,7 @@ void ESP8266_SendData(unsigned char *data, unsigned short len)
  * @return: {*} 平台返回的原始数据
  * 		不同网络设备返回的格式不同,需要去调试
  * 		如ESP8266的返回格式为"+IPD,x:yyy"
- * 			x代表数据长度，yyy是数据内容
+ * 		x代表数据长度，yyy是数据内容
  */
 unsigned char *ESP8266_GetIPD(unsigned short timeOut)
 {
@@ -102,10 +102,12 @@ unsigned char *ESP8266_GetIPD(unsigned short timeOut)
 	{
 		if (ESP8266_WaitRecive() == REV_OK) // 如果接收完成
 		{
-			ptrIPD = strstr((char *)esp8266Buf, "IPD,"); // 搜索“IPD”头
-			if (ptrIPD == NULL)							 // 如果没找到，可能是IPD头的延迟，还是需要等待一会，但不会超过设定的时间
+			// 搜索“IPD”头
+			ptrIPD = strstr((char *)esp8266Buf, "IPD,");
+			// 如果没找到，可能是IPD头的延迟,还是需要等待一会,但不会超过设定的时间
+			if (ptrIPD == NULL)
 			{
-				// UsartPrintf(USART_DEBUG, "\"IPD\" not found\r\n");
+				UsartPrintf(USART_DEBUG, "\"IPD\" not found\r\n");
 			}
 			else
 			{
@@ -122,7 +124,8 @@ unsigned char *ESP8266_GetIPD(unsigned short timeOut)
 			}
 		}
 		Delay_ms(5); // 延时等待
-	} while (timeOut--);
+		timeOut--;
+	} while (timeOut > 0);
 	return NULL; // 超时还未找到，返回空指针
 }
 
@@ -136,29 +139,31 @@ void ESP8266_Init(void)
 	UsartPrintf(USART_DEBUG, "1. AT\r\n");
 	while (ESP8266_SendCmd("AT\r\n", "OK"))
 	{
+		Delay_ms(500);
 	};
 	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "2. CWMODE\r\n");
 	while (ESP8266_SendCmd("AT+CWMODE=1\r\n", "OK"))
 	{
+		Delay_ms(500);
 	};
 	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "3. AT+CWDHCP\r\n");
 	while (ESP8266_SendCmd("AT+CWDHCP=1,1\r\n", "OK"))
 	{
-		
+		Delay_ms(500);
 	};
 	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "4. CWJAP\r\n");
 	while (ESP8266_SendCmd(ESP8266_WIFI_INFO, "GOT IP"))
 	{
-		
+		Delay_ms(500);
 	};
 	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "5. CIPSTART\r\n");
 	while (ESP8266_SendCmd(ESP8266_ONENET_INFO, "CONNECT"))
 	{
-		
+		Delay_ms(500);
 	};
 	Delay_ms(500);
 	UsartPrintf(USART_DEBUG, "6. ESP8266 Init OK\r\n");

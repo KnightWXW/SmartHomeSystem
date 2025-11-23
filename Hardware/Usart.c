@@ -98,7 +98,7 @@ void Usart2_Init(unsigned int baud)
  */
 void Usart_Init()
 {
-    Usart1_Init(115200); // debug串口
+    Usart1_Init(115200); // Debug串口
     Usart2_Init(115200); // ESP8266串口通信
     return;
 }

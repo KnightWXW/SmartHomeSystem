@@ -8,14 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "CJSON.h"
-
-#define PROID ""
-#define ACCESS_KEY ""
-#define DEVICE_NAME ""
-
-char devid[16];
-char key[48];
-extern unsigned char esp8266_buf[512];
+#include "Data.h"
 
 /*产品ID*/
 #define PROID "Yc4Qwil73t"
@@ -27,7 +20,9 @@ extern unsigned char esp8266_buf[512];
 #define DEVID "dev1"
 
 extern unsigned char esp8266_buf[512];
-extern uint8_t AlarmFlag;
+extern uint8_t AlarmFlag; // 报警状态
+extern uint8_t TempInt;	  // 当前温度(整数部分)
+extern uint8_t HumiInt;	  // 当前湿度(整数部分)
 
 /**
  * @description: 与onenet创建连接
@@ -54,26 +49,26 @@ _Bool OneNet_DevLink(void)
 				switch (MQTT_UnPacketConnectAck(dataPtr))
 				{
 				case 0:
-					UsartPrintf(USART_DEBUG, "Tips:	连接成功\r\n");
+					UsartPrintf(USART_DEBUG, "Tips:CONN SUCCESS\r\n");
 					status = 0;
 					break;
 				case 1:
-					UsartPrintf(USART_DEBUG, "WARN:	连接失败：协议错误\r\n");
+					UsartPrintf(USART_DEBUG, "WARN:CONN ERROR-Protocol Error\r\n");
 					break;
 				case 2:
-					UsartPrintf(USART_DEBUG, "WARN:	连接失败：非法的clientid\r\n");
+					UsartPrintf(USART_DEBUG, "WARN:CONN ERROR-Invalid Clientid\r\n");
 					break;
 				case 3:
-					UsartPrintf(USART_DEBUG, "WARN:	连接失败：服务器失败\r\n");
+					UsartPrintf(USART_DEBUG, "WARN:CONN ERROR-Server Failure\r\n");
 					break;
 				case 4:
-					UsartPrintf(USART_DEBUG, "WARN:	连接失败：用户名或密码错误\r\n");
+					UsartPrintf(USART_DEBUG, "WARN:CONN ERROR-Incorrect Username Or Password\r\n");
 					break;
 				case 5:
-					UsartPrintf(USART_DEBUG, "WARN:	连接失败：非法链接(比如token非法)\r\n");
+					UsartPrintf(USART_DEBUG, "WARN:CONN ERROR-Invalid Link(Invalid Token)\r\n");
 					break;
 				default:
-					UsartPrintf(USART_DEBUG, "ERR:	连接失败：未知错误\r\n");
+					UsartPrintf(USART_DEBUG, "ERROR:CONN ERROR-Unknown Error\r\n");
 					break;
 				}
 			}
@@ -82,7 +77,7 @@ _Bool OneNet_DevLink(void)
 	}
 	else
 	{
-		UsartPrintf(USART_DEBUG, "WARN:	MQTT_PacketConnect Failed\r\n");
+		UsartPrintf(USART_DEBUG, "WARN:MQTT_PacketConnect Failed\r\n");
 	}
 	return status;
 }
@@ -134,9 +129,7 @@ void OneNet_Publish(const char *topic, const char *msg)
  */
 void OneNet_RevPro(unsigned char *cmd)
 {
-
 	MQTT_PACKET_STRUCTURE mqttPacket = {NULL, 0, 0, 0}; // 协议包
-
 	char *req_payload = NULL;
 	char *cmdid_topic = NULL;
 	unsigned short topic_len = 0;
@@ -145,7 +138,7 @@ void OneNet_RevPro(unsigned char *cmd)
 	unsigned char qos = 0;
 	static unsigned short pkt_id = 0;
 	short result = 0;
-	cJSON *json, *params_json, *led_json, *Alarm_json;
+	cJSON *json, *params_json, *led_json, *Alarm_json, *Temp_json, *Humi_json;
 	char *dataPtr = NULL;
 	char numBuf[10];
 	int num = 0;
@@ -167,7 +160,6 @@ void OneNet_RevPro(unsigned char *cmd)
 		}
 		break;
 	case MQTT_PKT_PUBLISH: // 接收的Publish消息
-
 		result = MQTT_UnPacketPublish(cmd, &cmdid_topic, &topic_len, &req_payload, &req_len, &qos, &pkt_id);
 		if (result == 0)
 		{
@@ -178,6 +170,8 @@ void OneNet_RevPro(unsigned char *cmd)
 			params_json = cJSON_GetObjectItem(json, "params");
 			led_json = cJSON_GetObjectItem(params_json, "LED");
 			Alarm_json = cJSON_GetObjectItem(params_json, "Alarm");
+			Temp_json = cJSON_GetObjectItem(params_json, "temp");
+			Humi_json = cJSON_GetObjectItem(params_json, "hum");
 			if (led_json != NULL)
 			{
 				if (led_json->type == cJSON_True)
@@ -201,6 +195,14 @@ void OneNet_RevPro(unsigned char *cmd)
 					AlarmFlag = 0;
 					UsartPrintf(USART_DEBUG, "AlarmFlag = 0\r\n");
 				}
+			}
+			if (Temp_json != NULL)
+			{
+				TempInt = Temp_json->valueint;
+			}
+			if (Humi_json != NULL)
+			{
+				HumiInt = Humi_json->valueint;
 			}
 			cJSON_Delete(json);
 		}

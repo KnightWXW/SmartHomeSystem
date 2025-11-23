@@ -4,7 +4,8 @@
 _Bool OneNET_RegisterDevice(void);
 _Bool OneNet_DevLink(void);
 void OneNet_SendData(void);
-void OneNET_Subscribe(void);
+void OneNet_Subscribe(const char *topics[], unsigned char topic_cnt);
+void OneNet_Publish(const char *topic, const char *msg);
 void OneNet_RevPro(unsigned char *cmd);
 
 #endif
